@@ -11,7 +11,10 @@ const corpusData = readCorpus.createCorpus(
 
 router.get("/", (req, res) => {
   try {
-    const queryWord = req.body.searchWord.toLowerCase();
+    if (req.query.searchWord == null) {
+      return res.status(400).json({ msg: "Nhập từ cần tìm" });
+    }
+    const queryWord = req.query.searchWord.toLowerCase();
     const similarWords = findSimilarWord(queryWord, corpusData);
 
     return res
@@ -24,6 +27,9 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   try {
+    if (req.body.addedWord == null) {
+      return res.status(400).json({ msg: "Nhập từ cần thêm" });
+    }
     const addedWord = req.body.addedWord.trim().toLowerCase();
     const addedWordArray = addedWord.split(" ");
     if (addedWordArray.length > 0) {
@@ -46,6 +52,9 @@ router.post("/", (req, res) => {
 
 router.delete("/", (req, res) => {
   try {
+    if (req.body.deletedWord == null) {
+      return res.status(400).json({ msg: "Nhập từ cần thêm" });
+    }
     const deletedWord = req.body.deletedWord.trim().toLowerCase();
     const deleteWordArray = deletedWord.split(" ");
     if (deleteWordArray.length > 0) {
