@@ -1,5 +1,6 @@
 import axios from "axios";
 import { debounce } from "lodash";
+import toast from "react-hot-toast";
 
 import NavBar from "@/components/NavBar";
 import { useCallback, useState } from "react";
@@ -25,18 +26,20 @@ export default function HomePage() {
         );
         if (response.status === 200) {
           setSearchResults(response.data.mostSimilarityWords);
+        } else {
+          toast.error(response.data.msg);
         }
         setSearchText(word);
       }
     } catch (error) {
       console.log("Error when searching: ", error);
+      toast.error("Đã xảy ra lỗi");
     }
     setIsLoading(false);
   }, []);
 
   const deleteWord = useCallback(async () => {
     try {
-      console.log(searchText);
       const response = await axios.delete(
         "http://localhost:8000/api/v1/search",
         {
@@ -48,9 +51,40 @@ export default function HomePage() {
       if (response.status === 200) {
         setIsLoading(true);
         searchWord(searchText);
+        toast.success("Đã xoá thành công");
+      } else {
+        toast.error(response.data.msg);
       }
     } catch (error) {
-      console.log("Error when searching: ", error);
+      if (error.response && error.response.data.msg) {
+        toast.error(error.response.data.msg);
+      } else {
+        console.log("Error when deleting: ", error);
+        toast.error("Đã xảy ra lỗi");
+      }
+    }
+  }, [searchText]);
+
+  const addWord = useCallback(async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/v1/search", {
+        addedWord: searchText,
+      });
+      if (response.status === 200) {
+        setIsLoading(true);
+        searchWord(searchText);
+
+        toast.success("Đã thêm từ mới thành công");
+      } else {
+        toast.error(response.data.msg);
+      }
+    } catch (error) {
+      if (error.response && error.response.data.msg) {
+        toast.error(error.response.data.msg);
+      } else {
+        console.log("Error when adding: ", error);
+        toast.error("Đã xảy ra lỗi");
+      }
     }
   }, [searchText]);
 
@@ -64,7 +98,7 @@ export default function HomePage() {
   const searchHandler = (event) => {
     setSearchResults([]);
     setIsLoading(true);
-    debouncedSearch(event.target.value);
+    debouncedSearch(event.target.value.trim());
   };
 
   return (
@@ -81,7 +115,7 @@ export default function HomePage() {
           <>
             <div className="flex flex-row gap-3 items-stretch justify-center">
               <FunctionButton
-                onClick={() => {}}
+                onClick={addWord}
                 title={`Thêm từ: ${searchText}`}
                 className="bg-green-300 hover:bg-green-500"
               />
