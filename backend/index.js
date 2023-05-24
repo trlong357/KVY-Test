@@ -1,8 +1,11 @@
 const express = require("express");
-const fs = require("fs");
 const searchRoute = require("./route/v1/search");
+const bodyParser = require("body-parser");
 
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use("/search", searchRoute);
 
