@@ -42,7 +42,7 @@ router.post("/", (req, res) => {
         return res.status(200).json({ msg: "Đã lưu thành công" });
       } else {
         return res
-          .status(204)
+          .status(400)
           .json({ msg: `Đã tồn tại từ ${req.body.addedWord}` });
       }
     }
