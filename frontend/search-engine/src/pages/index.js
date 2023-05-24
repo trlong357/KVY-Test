@@ -5,6 +5,7 @@ import NavBar from "@/components/NavBar";
 import { useCallback, useState } from "react";
 import Spinner from "@/components/Spinner";
 import FunctionButton from "@/components/FunctionButton";
+import SearchInput from "@/components/SearchInput";
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +34,26 @@ export default function HomePage() {
     setIsLoading(false);
   }, []);
 
+  const deleteWord = useCallback(async () => {
+    try {
+      console.log(searchText);
+      const response = await axios.delete(
+        "http://localhost:8000/api/v1/search",
+        {
+          params: {
+            deletedWord: searchText,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setIsLoading(true);
+        searchWord(searchText);
+      }
+    } catch (error) {
+      console.log("Error when searching: ", error);
+    }
+  }, [searchText]);
+
   const debouncedSearch = useCallback(
     debounce((word) => {
       searchWord(word);
@@ -45,24 +66,12 @@ export default function HomePage() {
     setIsLoading(true);
     debouncedSearch(event.target.value);
   };
+
   return (
     <main className="bg-white px-10 dark:bg-gray-900 md:px-20 lg:px-40">
       <section className="min-h-screen">
         <NavBar setDarkMode={() => {}} />
-        <div className="w-full flex flex-col">
-          <div className="pb-8 text-center">
-            <p className="text-4xl font-bold inline border-b-4 border-pink-600 text-gray-300">
-              Search Engine
-            </p>
-          </div>
-          <input
-            onChange={searchHandler}
-            className="bg-[#ccd6f6] p-2 mb-3"
-            type="text"
-            placeholder="Nhập chữ cần tìm"
-            name="name"
-          />
-        </div>
+        <SearchInput searchHandler={searchHandler} />
         {isLoading ? (
           <div className="text-center">
             <Spinner />
@@ -77,7 +86,7 @@ export default function HomePage() {
                 className="bg-green-300 hover:bg-green-500"
               />
               <FunctionButton
-                onClick={() => {}}
+                onClick={deleteWord}
                 title={`Xoá từ: ${searchText}`}
                 className="bg-red-300 hover:bg-red-500"
               />

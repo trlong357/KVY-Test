@@ -11,7 +11,8 @@ const corpusData = readCorpus.createCorpus(
 
 router.get("/", (req, res) => {
   try {
-    if (req.query.searchWord == null) {
+    console.log(req.query);
+    if (req.query.searchWord == null || req.query.searchWord == "") {
       return res.status(400).json({ msg: "Nhập từ cần tìm" });
     }
     const queryWord = req.query.searchWord.toLowerCase();
@@ -32,7 +33,7 @@ router.post("/", (req, res) => {
     }
     const addedWord = req.body.addedWord.trim().toLowerCase();
     const addedWordArray = addedWord.split(" ");
-    if (addedWordArray.length > 0) {
+    if (addedWordArray.length > 1) {
       return res.status(400).json({ msg: "Chỉ nhập 1 từ" });
     } else {
       const indexOfAddedWord = corpusData.indexOf(addedWord);
@@ -52,12 +53,12 @@ router.post("/", (req, res) => {
 
 router.delete("/", (req, res) => {
   try {
-    if (req.body.deletedWord == null) {
+    if (req.query.deletedWord == null || req.query.deletedWord == "") {
       return res.status(400).json({ msg: "Nhập từ cần xoá" });
     }
-    const deletedWord = req.body.deletedWord.trim().toLowerCase();
+    const deletedWord = req.query.deletedWord.trim().toLowerCase();
     const deleteWordArray = deletedWord.split(" ");
-    if (deleteWordArray.length > 0) {
+    if (deleteWordArray.length > 1) {
       return res.status(400).json({ msg: "Chỉ nhập 1 từ" });
     } else {
       const similarWords = findSimilarWord(deletedWord, corpusData);
