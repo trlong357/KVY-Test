@@ -53,7 +53,7 @@ router.post("/", (req, res) => {
 router.delete("/", (req, res) => {
   try {
     if (req.body.deletedWord == null) {
-      return res.status(400).json({ msg: "Nhập từ cần thêm" });
+      return res.status(400).json({ msg: "Nhập từ cần xoá" });
     }
     const deletedWord = req.body.deletedWord.trim().toLowerCase();
     const deleteWordArray = deletedWord.split(" ");

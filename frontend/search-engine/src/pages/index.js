@@ -4,10 +4,12 @@ import { debounce } from "lodash";
 import NavBar from "@/components/NavBar";
 import { useCallback, useState } from "react";
 import Spinner from "@/components/Spinner";
+import FunctionButton from "@/components/FunctionButton";
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   const searchWord = useCallback(async (word) => {
     try {
@@ -22,8 +24,8 @@ export default function HomePage() {
         );
         if (response.status === 200) {
           setSearchResults(response.data.mostSimilarityWords);
-        } else {
         }
+        setSearchText(word);
       }
     } catch (error) {
       console.log("Error when searching: ", error);
@@ -68,7 +70,21 @@ export default function HomePage() {
         ) : null}
         {searchResults.length > 0 ? (
           <>
-            <p className="text-3xl inline text-gray-300">Kết quả:</p>
+            <div className="flex flex-row gap-3 items-stretch justify-center">
+              <FunctionButton
+                onClick={() => {}}
+                title={`Thêm từ: ${searchText}`}
+                className="bg-green-300 hover:bg-green-500"
+              />
+              <FunctionButton
+                onClick={() => {}}
+                title={`Xoá từ: ${searchText}`}
+                className="bg-red-300 hover:bg-red-500"
+              />
+            </div>
+
+            <p className="text-3xl  text-gray-300">Kết quả:</p>
+
             <div className="mt-3 gap-3 flex flex-row items-stretch justify-center">
               {searchResults.map((result, index) => (
                 <div
