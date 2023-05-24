@@ -3,51 +3,68 @@ const fs = require("fs");
 
 const router = express.Router();
 const readCorpus = require("../../utils/readCorpus");
-const { calculateSimilarity } = require("../../utils/similarityWords");
+const { findSimilarWord } = require("../../utils/similarityWords");
 
 const corpusData = readCorpus.createCorpus(
   __dirname + "/../../assets/hemingway.txt"
 );
 
-router.post("/", (req, res, next) => {
-  const queryWord = req.body.searchWord.toLowerCase();
-  const similarWords = [];
-  corpusData.forEach((word) => {
-    const similarity = calculateSimilarity(queryWord, word);
-    similarWords.push({ word, score: similarity });
-  });
+router.get("/", (req, res) => {
+  try {
+    const queryWord = req.body.searchWord.toLowerCase();
+    const similarWords = findSimilarWord(queryWord, corpusData);
 
-  // score càng thấp thì càng giống với từ cần tìm
-  similarWords.sort((a, b) => a.score - b.score);
-  console.log(corpusData.length);
-
-  return res
-    .status(200)
-    .json({ mostSimilarityWords: similarWords.splice(0, 3) });
+    return res
+      .status(200)
+      .json({ mostSimilarityWords: similarWords.splice(0, 3) });
+  } catch (error) {
+    return res.status(400).json({ msg: `Đã có lỗi xảy ra: ${error}` });
+  }
 });
 
-router.delete("/", (req, res, next) => {
-  const deletedWord = req.body.deletedWord.toLowerCase();
-  const similarWords = [];
-  corpusData.forEach((word) => {
-    const similarity = calculateSimilarity(deletedWord, word);
-    similarWords.push({ word, score: similarity });
-  });
+router.post("/", (req, res) => {
+  try {
+    const addedWord = req.body.addedWord.trim().toLowerCase();
+    const addedWordArray = addedWord.split(" ");
+    if (addedWordArray.length > 0) {
+      return res.status(400).json({ msg: "Chỉ nhập 1 từ" });
+    } else {
+      const indexOfAddedWord = corpusData.indexOf(addedWord);
+      if (indexOfAddedWord === -1) {
+        corpusData.push(addedWord);
+        return res.status(200).json({ msg: "Đã lưu thành công" });
+      } else {
+        return res
+          .status(204)
+          .json({ msg: `Đã tồn tại từ ${req.body.addedWord}` });
+      }
+    }
+  } catch (error) {
+    return res.status(400).json({ msg: `Đã có lỗi xảy ra: ${error}` });
+  }
+});
 
-  // score càng thấp thì càng giống với từ cần tìm
-  similarWords.sort((a, b) => a.score - b.score);
+router.delete("/", (req, res) => {
+  try {
+    const deletedWord = req.body.deletedWord.trim().toLowerCase();
+    const deleteWordArray = deletedWord.split(" ");
+    if (deleteWordArray.length > 0) {
+      return res.status(400).json({ msg: "Chỉ nhập 1 từ" });
+    } else {
+      const similarWords = findSimilarWord(deletedWord, corpusData);
 
-  const theMostSimilarityWord = similarWords[0];
-  console.log(similarWords);
-  console.log(theMostSimilarityWord);
+      const theMostSimilarityWord = similarWords[0];
 
-  const indexOfMostSimilarityWord = corpusData.indexOf(
-    theMostSimilarityWord.word
-  );
-  corpusData.splice(indexOfMostSimilarityWord, 1);
-  console.log(corpusData.length);
-  console.log("---");
-  return res.status(200).json(theMostSimilarityWord);
+      const indexOfMostSimilarityWord = corpusData.indexOf(
+        theMostSimilarityWord.word
+      );
+      corpusData.splice(indexOfMostSimilarityWord, 1);
+
+      return res.status(200).json({ msg: "Đã xoá thành công" });
+    }
+  } catch (error) {
+    return res.status(400).json({ msg: `Đã có lỗi xảy ra: ${error}` });
+  }
 });
 
 module.exports = router;
