@@ -4,7 +4,7 @@ function Spinner({ label = "Loading..." }) {
   return (
     <>
       <div
-        className="dark:text-black dark:bg-white 
+        className="dark:text-black dark:bg-white bg-black text-white
         focus:ring-primary focus:ring-4 
         font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2
         inline-flex items-center"

@@ -13,6 +13,7 @@ export default function HomePage() {
   const [searchResults, setSearchResults] = useState([]);
   const [searchText, setSearchText] = useState("");
 
+  // Search handler
   const searchWord = useCallback(async (word) => {
     try {
       if (word != "") {
@@ -37,7 +38,21 @@ export default function HomePage() {
     }
     setIsLoading(false);
   }, []);
+  const debouncedSearch = useCallback(
+    debounce((word) => {
+      searchWord(word);
+    }, 500),
+    []
+  );
 
+  const searchHandler = (event) => {
+    setSearchResults([]);
+    setIsLoading(true);
+    debouncedSearch(event.target.value.trim());
+  };
+  // -----
+
+  // Delete handler
   const deleteWord = useCallback(async () => {
     try {
       const response = await axios.delete(
@@ -64,7 +79,9 @@ export default function HomePage() {
       }
     }
   }, [searchText]);
+  // -----
 
+  // Add handler
   const addWord = useCallback(async () => {
     try {
       const response = await axios.post("http://localhost:8000/api/v1/search", {
@@ -87,24 +104,12 @@ export default function HomePage() {
       }
     }
   }, [searchText]);
-
-  const debouncedSearch = useCallback(
-    debounce((word) => {
-      searchWord(word);
-    }, 500),
-    []
-  );
-
-  const searchHandler = (event) => {
-    setSearchResults([]);
-    setIsLoading(true);
-    debouncedSearch(event.target.value.trim());
-  };
+  // -----
 
   return (
-    <main className="bg-white px-10 dark:bg-gray-900 md:px-20 lg:px-40">
+    <main className=" bg-white px-10 dark:bg-gray-900 md:px-20 lg:px-40">
       <section className="min-h-screen">
-        <NavBar setDarkMode={() => {}} />
+        <NavBar />
         <SearchInput searchHandler={searchHandler} />
         {isLoading ? (
           <div className="text-center">
@@ -126,12 +131,14 @@ export default function HomePage() {
               />
             </div>
 
-            <p className="text-3xl  text-gray-300">Kết quả:</p>
+            <p className="text-3xl text-gray-600 dark:text-gray-300">
+              Kết quả:
+            </p>
 
             <div className="mt-3 gap-3 flex flex-row items-stretch justify-center">
               {searchResults.map((result, index) => (
                 <div
-                  className="dark:text-black rounded-xl flex-1 text-center p-4 bg-white"
+                  className="dark:text-black dark:bg-white text-white bg-gray-700 rounded-xl flex-1 text-center p-4 "
                   key={index}
                 >
                   {result.word}

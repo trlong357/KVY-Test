@@ -1,16 +1,31 @@
 import React from "react";
-import { BsFillMoonStarsFill } from "react-icons/bs";
+import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
+import Logo from "./Logo";
+import useThemeSwitcher from "@/hooks/useThemeSwitcher";
 
-function NavBar({ setDarkMode }) {
+function NavBar() {
+  const [mode, setMode] = useThemeSwitcher();
+
   return (
-    <nav className="py-10 mb-12 flex justify-between dark:text-white">
-      <h1 className="font-burtons text-xl">Search Engine</h1>
+    <nav className="py-4 mb-12 flex justify-between dark:text-white">
+      <Logo />
       <ul className="flex items-center">
         <li>
-          <BsFillMoonStarsFill
-            onClick={setDarkMode}
-            className="dark:hover:text-yellow-400 cursor-pointer text-2xl"
-          />
+          <button onClick={() => setMode(mode === "light" ? "dark" : "light")}>
+            {mode === "light" ? (
+              <BsFillMoonStarsFill
+                className={
+                  "fill-dark hover:text-yellow-400 cursor-pointer text-2xl"
+                }
+              />
+            ) : (
+              <BsFillSunFill
+                className={
+                  "fill-dark hover:text-yellow-400 cursor-pointer text-2xl"
+                }
+              />
+            )}
+          </button>
         </li>
       </ul>
     </nav>
