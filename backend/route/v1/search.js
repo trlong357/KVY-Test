@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
     const corpusData = await loadCorpus(dbClient);
     const queryWord = req.query.searchWord.toLowerCase();
     const similarWords = findSimilarWord(queryWord, corpusData);
-
+    dbClient.close();
     return res
       .status(200)
       .json({ mostSimilarityWords: similarWords.splice(0, 3) });
@@ -42,8 +42,10 @@ router.post("/", async (req, res) => {
       const checkExistWord = await searchWord(dbClient, addedWord);
       if (checkExistWord === null) {
         await addWordToCorpus(dbClient, addedWord);
+        dbClient.close();
         return res.status(200).json({ msg: "Đã lưu thành công" });
       } else {
+        dbClient.close();
         return res
           .status(400)
           .json({ msg: `Đã tồn tại từ ${req.body.addedWord}` });
@@ -71,7 +73,7 @@ router.delete("/", async (req, res) => {
       const theMostSimilarityWord = similarWords[0];
 
       await removeWordFromCorpus(dbClient, theMostSimilarityWord.word);
-
+      dbClient.close();
       return res.status(200).json({ msg: "Đã xoá thành công" });
     }
   } catch (error) {
