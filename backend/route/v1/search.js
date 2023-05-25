@@ -4,7 +4,13 @@ const fs = require("fs");
 const router = express.Router();
 const readCorpus = require("../../utils/readCorpus");
 const { findSimilarWord } = require("../../utils/similarityWords");
-const { loadCorpus, connectToMongo } = require("../../utils/database");
+const {
+  loadCorpus,
+  connectToMongo,
+  searchWord,
+  addWordToCorpus,
+  removeWordFromCorpus,
+} = require("../../utils/database");
 
 // const corpusData = readCorpus.createCorpus(
 //   __dirname + "/../../assets/hemingway.txt"
@@ -15,10 +21,8 @@ router.get("/", async (req, res) => {
     if (req.query.searchWord == null || req.query.searchWord == "") {
       return res.status(400).json({ msg: "Nhập từ cần tìm" });
     }
-    console.log("call");
     const dbClient = await connectToMongo();
     const corpusData = await loadCorpus(dbClient);
-    console.log(corpusData);
     const queryWord = req.query.searchWord.toLowerCase();
     const similarWords = findSimilarWord(queryWord, corpusData);
 
@@ -40,9 +44,10 @@ router.post("/", async (req, res) => {
     if (addedWordArray.length > 1) {
       return res.status(400).json({ msg: "Chỉ nhập 1 từ" });
     } else {
-      const indexOfAddedWord = corpusData.indexOf(addedWord);
-      if (indexOfAddedWord === -1) {
-        corpusData.push(addedWord);
+      const dbClient = await connectToMongo();
+      const checkExistWord = await searchWord(dbClient, addedWord);
+      if (checkExistWord === null) {
+        await addWordToCorpus(dbClient, addedWord);
         return res.status(200).json({ msg: "Đã lưu thành công" });
       } else {
         return res

@@ -72,6 +72,16 @@ async function addWordToCorpus(dbClient, word) {
   await collection.insertOne({ word });
 }
 
+// Function to search for a specific word in a collection
+async function searchWord(dbClient, word) {
+  const db = dbClient.db(dbName);
+  const collection = db.collection(collectionName);
+
+  const query = { word: { $eq: word } };
+  const document = await collection.findOne(query);
+  return document ? document.word : null;
+}
+
 // Function to remove a word from the search corpus in MongoDB
 async function removeWordFromCorpus(dbClient, word) {
   const db = dbClient.db(dbName);
@@ -88,4 +98,5 @@ module.exports = {
   loadCorpus,
   addWordToCorpus,
   removeWordFromCorpus,
+  searchWord,
 };
