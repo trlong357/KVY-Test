@@ -79,13 +79,9 @@ async function searchWord(dbClient, word) {
 
 // Function to remove a word from the search corpus in MongoDB
 async function removeWordFromCorpus(dbClient, word) {
-  console.log("call remove from mongo");
   const db = dbClient.db(dbName);
-  console.log("debug 0");
   const collection = db.collection(collectionName);
-  console.log("debug 1");
   await collection.deleteOne({ word });
-  console.log("debug 2");
 }
 
 module.exports = {

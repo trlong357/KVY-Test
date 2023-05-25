@@ -1,8 +1,6 @@
 const express = require("express");
-const fs = require("fs");
 
 const router = express.Router();
-const readCorpus = require("../../utils/readCorpus");
 const { findSimilarWord } = require("../../utils/similarityWords");
 const {
   loadCorpus,
@@ -11,10 +9,6 @@ const {
   addWordToCorpus,
   removeWordFromCorpus,
 } = require("../../utils/database");
-
-// const corpusData = readCorpus.createCorpus(
-//   __dirname + "/../../assets/hemingway.txt"
-// );
 
 router.get("/", async (req, res) => {
   try {
