@@ -4,16 +4,21 @@ const fs = require("fs");
 const router = express.Router();
 const readCorpus = require("../../utils/readCorpus");
 const { findSimilarWord } = require("../../utils/similarityWords");
+const { loadCorpus, connectToMongo } = require("../../utils/database");
 
-const corpusData = readCorpus.createCorpus(
-  __dirname + "/../../assets/hemingway.txt"
-);
+// const corpusData = readCorpus.createCorpus(
+//   __dirname + "/../../assets/hemingway.txt"
+// );
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   try {
     if (req.query.searchWord == null || req.query.searchWord == "") {
       return res.status(400).json({ msg: "Nhập từ cần tìm" });
     }
+    console.log("call");
+    const dbClient = await connectToMongo();
+    const corpusData = await loadCorpus(dbClient);
+    console.log(corpusData);
     const queryWord = req.query.searchWord.toLowerCase();
     const similarWords = findSimilarWord(queryWord, corpusData);
 
@@ -25,7 +30,7 @@ router.get("/", (req, res) => {
   }
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
     if (req.body.addedWord == null) {
       return res.status(400).json({ msg: "Nhập từ cần thêm" });
@@ -50,7 +55,7 @@ router.post("/", (req, res) => {
   }
 });
 
-router.delete("/", (req, res) => {
+router.delete("/", async (req, res) => {
   try {
     if (req.query.deletedWord == null || req.query.deletedWord == "") {
       return res.status(400).json({ msg: "Nhập từ cần xoá" });
