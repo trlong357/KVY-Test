@@ -11,7 +11,6 @@ const corpusData = readCorpus.createCorpus(
 
 router.get("/", (req, res) => {
   try {
-    console.log(req.query);
     if (req.query.searchWord == null || req.query.searchWord == "") {
       return res.status(400).json({ msg: "Nhập từ cần tìm" });
     }

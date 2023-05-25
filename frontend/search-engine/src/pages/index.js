@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import Spinner from "@/components/Spinner";
 import FunctionButton from "@/components/FunctionButton";
 import SearchInput from "@/components/SearchInput";
+import SearchResult from "@/components/SearchResult";
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -137,12 +138,7 @@ export default function HomePage() {
 
             <div className="mt-3 gap-3 flex flex-row items-stretch justify-center">
               {searchResults.map((result, index) => (
-                <div
-                  className="dark:text-black dark:bg-white text-white bg-gray-700 rounded-xl flex-1 text-center p-4 "
-                  key={index}
-                >
-                  {result.word}
-                </div>
+                <SearchResult key={index} text={result.word} />
               ))}
             </div>
           </>
