@@ -8,6 +8,8 @@
 
 ## Installation
 
+### I use node version: v18.14.0 and mongod version: v6.0.4
+
 ### Make sure you don't have "search_corpus" database in your localhost:27017
 
 ### Run the following commands in the project directory:
