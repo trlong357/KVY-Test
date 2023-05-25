@@ -70,14 +70,13 @@ router.delete("/", async (req, res) => {
     if (deleteWordArray.length > 1) {
       return res.status(400).json({ msg: "Chỉ nhập 1 từ" });
     } else {
+      const dbClient = await connectToMongo();
+      const corpusData = await loadCorpus(dbClient);
       const similarWords = findSimilarWord(deletedWord, corpusData);
 
       const theMostSimilarityWord = similarWords[0];
 
-      const indexOfMostSimilarityWord = corpusData.indexOf(
-        theMostSimilarityWord.word
-      );
-      corpusData.splice(indexOfMostSimilarityWord, 1);
+      await removeWordFromCorpus(dbClient, theMostSimilarityWord.word);
 
       return res.status(200).json({ msg: "Đã xoá thành công" });
     }
